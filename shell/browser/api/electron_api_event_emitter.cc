@@ -29,9 +29,9 @@ v8::Global<v8::Value>* GetOriginalEmitReference() {
 }
 
 v8::Local<v8::String> EmitKey(v8::Isolate* isolate) {
-  static base::NoDestructor<v8::Eternal<v8::String>> key(
+  static const v8::Eternal<v8::String> key(
       isolate, gin::StringToSymbol(isolate, "emit"));
-  return key->Get(isolate);
+  return key.Get(isolate);
 }
 
 // The private slot of a wrapper that holds its EventListenerSet.
@@ -55,7 +55,7 @@ DataProperty ReadDataProperty(v8::Isolate* isolate,
                               v8::Local<v8::Object> object,
                               v8::Local<v8::String> key,
                               v8::Local<v8::Value>* value) {
-  static base::NoDestructor<v8::Eternal<v8::String>> value_key(
+  static const v8::Eternal<v8::String> value_key(
       isolate, gin::StringToSymbol(isolate, "value"));
 
   // Far longer than the chain of any native emitter.
@@ -81,10 +81,10 @@ DataProperty ReadDataProperty(v8::Isolate* isolate,
                .ToLocal(&descriptor) ||
           !descriptor->IsObject() ||
           !descriptor.As<v8::Object>()
-               ->HasOwnProperty(context, value_key->Get(isolate))
+               ->HasOwnProperty(context, value_key.Get(isolate))
                .FromMaybe(false) ||
           !descriptor.As<v8::Object>()
-               ->Get(context, value_key->Get(isolate))
+               ->Get(context, value_key.Get(isolate))
                .ToLocal(value)) {
         return DataProperty::kUnknown;
       }
@@ -232,7 +232,7 @@ void EventListenerSet::Link(v8::Isolate* isolate,
   if (linked_)
     return;
 
-  static base::NoDestructor<v8::Eternal<v8::String>> events_key(
+  static const v8::Eternal<v8::String> events_key(
       isolate, gin::StringToSymbol(isolate, "_events"));
 
   v8::Local<v8::Context> context;
@@ -256,7 +256,7 @@ void EventListenerSet::Link(v8::Isolate* isolate,
   }
 
   v8::Local<v8::Value> events;
-  if (ReadDataProperty(isolate, context, wrapper, events_key->Get(isolate),
+  if (ReadDataProperty(isolate, context, wrapper, events_key.Get(isolate),
                        &events) == DataProperty::kUnknown) {
     observe_all_ = true;
     return;
