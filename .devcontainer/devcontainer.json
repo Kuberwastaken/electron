@@ -16,6 +16,11 @@
 			"onAutoForward": "silent"
 		}
 	},
+	"features": {
+		"ghcr.io/devcontainers/features/sshd:1": {
+			"version": "latest"
+		}
+	},
 	"hostRequirements": {
 		"storage": "128gb",
 		"cpus": 16
